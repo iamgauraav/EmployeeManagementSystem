@@ -14,5 +14,7 @@ namespace RepositoryLayer.Services
         }
 
         public DbSet<Admin> Admin { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        
     }
 }

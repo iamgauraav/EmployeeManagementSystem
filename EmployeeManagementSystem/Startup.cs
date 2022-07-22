@@ -35,8 +35,12 @@ namespace EmployeeManagementSystem
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddTransient<IAdminRL, AdminRL>();
+            services.AddTransient<IAdminBL, AdminBL>();
+            services.AddTransient<IEmployeeRL, EmployeeRL>();
+            services.AddTransient<IEmployeeBL, EmployeeBL>();
             services.AddControllers().AddNewtonsoftJson(options =>
-             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddDbContext<EmployeeManagementContext>(x => x.UseSqlServer(Configuration.GetConnectionString("Constr")));
             services.AddSwaggerGen(setup =>
             {
@@ -65,8 +69,8 @@ namespace EmployeeManagementSystem
                 });
 
             });
-            services.AddTransient<IAdminRL, AdminRL>();
-            services.AddTransient<IAdminBL, AdminBL>();
+            
+            
 
             services.AddAuthentication(x =>
             {
@@ -90,6 +94,15 @@ namespace EmployeeManagementSystem
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseSwagger();
+
+            //Enable middleware to serve swagger - ui(HTML, JS, CSS, etc.)
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "EmployeeManagementSystem");
+            });
+            app.UseAuthorization();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -98,18 +111,11 @@ namespace EmployeeManagementSystem
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            
-            app.UseSwagger();
-
-            //Enable middleware to serve swagger - ui(HTML, JS, CSS, etc.)
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "EmployeeManagementSystem");
-            });
-
-
+            app.UseAuthentication();
 
             app.UseAuthorization();
+
+
 
             app.UseEndpoints(endpoints =>
             {

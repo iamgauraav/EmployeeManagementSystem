@@ -9,23 +9,35 @@ namespace BussinessLayer.Services
 {
     public class AdminBL : IAdminBL
     {
-        IAdminRL adminRl;
-
+        IAdminRL adminRL;
         public AdminBL(IAdminRL adminRl)
         {
-            this.adminRl = adminRl;
+            this.adminRL = adminRl;
         }
 
         public void AddAdmin(AdminPostModel adminPostModel)
         {
             try
             {
-                this.adminRl.AddAdmin(adminPostModel);
+                this.adminRL.AddAdmin(adminPostModel);
             }
             catch (Exception)
             {
 
                 throw;
+            }
+        }
+
+        public bool ForgetPassword(string Emails)
+        {
+            try
+            {
+                return this.adminRL.ForgetPassword(Emails);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
             }
         }
 
@@ -33,12 +45,12 @@ namespace BussinessLayer.Services
         {
             try
             {
-                return this.adminRl.LoginAdmin(Email, Password);
+                return this.adminRL.LoginAdmin(Email, Password);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                throw ex;
             }
         }
     }

@@ -25,7 +25,7 @@ namespace EmployeeManagementSystem.Controllers
             try
             {
                 this.adminBL.AddAdmin(admin);
-                return this.Ok(new { success = true, message = "Registration Sucessful" });
+                return this.Ok(new { success = true, message="Registration Successfull" });
             }
             catch (Exception ex)
             {
@@ -33,20 +33,44 @@ namespace EmployeeManagementSystem.Controllers
                 throw ex;
             }
         }
-
         [HttpPost("Login/{Email}/{Password}")]
-
         public ActionResult LoginAdmin(string Email, string Password)
         {
             try
             {
                 var user = employeeManagementContext.Admin.FirstOrDefault(u => u.Email == Email);
+
                 if (user == null)
                 {
                     return this.BadRequest(new { success = false, message = "Email does not Exists " });
                 }
+                var user1 = employeeManagementContext.Admin.FirstOrDefault(u => u.Email == Email && u.Password == Password);
+                if (user1 == null)
+                {
+                    return this.BadRequest(new { success = false, message = "Password is Invalid " });
+                }
                 string token = this.adminBL.LoginAdmin(Email, Password);
                 return this.Ok(new { success = true, message = "Login Sucessfull", token = token });
+            }
+            catch (Exception )
+            {
+
+                throw ;
+            }
+        }
+        [HttpPost("ForgetPassword/{Email}")]
+        public IActionResult ForgetPassword(string Email)
+        {
+            try
+            {
+                var admin = employeeManagementContext.Admin.FirstOrDefault(u => u.Email == Email);
+                if (admin == null)
+                {
+                    return this.BadRequest(new { success = false, message = "Email does not Exists" });
+
+                }
+                bool result = this.adminBL.ForgetPassword(Email);
+                return this.Ok(new { success = true, message = "Email has sent" });
             }
             catch (Exception)
             {
