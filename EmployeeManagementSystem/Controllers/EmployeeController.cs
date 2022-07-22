@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using RepositoryLayer.Entities;
 using RepositoryLayer.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -79,6 +80,41 @@ namespace EmployeeManagementSystem.Controllers
             }
            
         }
+        [Authorize(Roles = Role.Admin)]
+        [HttpPut("GetEmployee")]
+        public async Task<ActionResult> GetEmployee()
+        {
+           
+            try
+            {
+                var userid = User.Claims.FirstOrDefault(x => x.Type.ToString().Equals("AdminId", StringComparison.InvariantCultureIgnoreCase));
+                int UserId = Int32.Parse(userid.Value);
+                Employee employee = await this.employeeBL.GetEmployee(UserId);
+                return this.Ok(new { success = true, message = "Required note is:", data = employee });
+            }
+            catch (Exception ex)
+            {
+                return this.BadRequest(new { Success = false, message = ex.Message });
+            }
+        }
+        [Authorize(Roles = Role.Admin)]
+        [HttpGet("GetAllEmployee")]
+        public async Task<ActionResult> GetAllEmployees()
+        {
+            try
+            {
+                var userid = User.Claims.FirstOrDefault(x => x.Type.ToString().Equals("AdminId", StringComparison.InvariantCultureIgnoreCase));
+                int UserId = Int32.Parse(userid.Value);
+                List<Employee> employee = await this.employeeBL.GetAllEmployee();
+                return this.Ok(new { success = true, message="Required note is:", data = employee });
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
 
     }
 }

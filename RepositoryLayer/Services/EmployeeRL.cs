@@ -1,4 +1,5 @@
 ﻿using DataBaseLayer.Employee;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using RepositoryLayer.Entities;
 using RepositoryLayer.Interfaces;
@@ -63,6 +64,35 @@ namespace RepositoryLayer.Services
 
                 throw;
             };
+        }
+
+        public async Task<List<Employee>> GetAllEmployee()
+        {
+            try
+            {
+                List<Employee> result = new List<Employee>();
+
+                result = await employeeManagementContext.Employees.Where(u => u.EmployeeId == u.EmployeeId).ToListAsync();
+                return result;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<Employee> GetEmployee(int EmployeeId)
+        {
+            try
+            {
+                return await employeeManagementContext.Employees.FirstOrDefaultAsync(u => u.EmployeeId == EmployeeId);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public async Task UpdateEmployee( int EmployeeId , UpdateModel updateModel)

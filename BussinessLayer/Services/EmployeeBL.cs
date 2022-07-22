@@ -1,5 +1,6 @@
 ﻿using BussinessLayer.Interface;
 using DataBaseLayer.Employee;
+using RepositoryLayer.Entities;
 using RepositoryLayer.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,32 @@ namespace BussinessLayer.Services
             try
             {
                 await this.employeeRL.DeleteEmployee( EmployeeId);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<List<Employee>> GetAllEmployee()
+        {
+            try
+            {
+                return await this.employeeRL.GetAllEmployee();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public Task<Employee> GetEmployee(int EmployeeId)
+        {
+            try
+            {
+                return this.employeeRL.GetEmployee(EmployeeId);
             }
             catch (Exception)
             {
