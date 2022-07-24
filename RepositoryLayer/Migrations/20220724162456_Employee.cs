@@ -38,7 +38,8 @@ namespace RepositoryLayer.Migrations
                     ContactNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     EmailId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Salary = table.Column<int>(type: "int", nullable: false),
-                    AdminId = table.Column<int>(type: "int", nullable: false)
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {

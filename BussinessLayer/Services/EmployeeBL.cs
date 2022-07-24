@@ -69,6 +69,19 @@ namespace BussinessLayer.Services
             }
         }
 
+        public string LoginEmployee(string Email, string Password)
+        {
+            try
+            {
+                return this.employeeRL.LoginEmployee(Email, Password);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         public async Task UpdateEmployee(int EmployeeId,UpdateModel updateModel)
         {
             try

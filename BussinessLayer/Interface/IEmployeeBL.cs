@@ -14,5 +14,6 @@ namespace BussinessLayer.Interface
         Task DeleteEmployee(int EmployeeId);
         Task<Employee> GetEmployee(int EmployeeId);
         Task<List<Employee>> GetAllEmployee();
+        public string LoginEmployee(string Email, string Password);
     }
 }
