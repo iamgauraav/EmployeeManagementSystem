@@ -1,10 +1,14 @@
 ﻿using DataBaseLayer.Employee;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using RepositoryLayer.Entities;
 using RepositoryLayer.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -37,6 +41,8 @@ namespace RepositoryLayer.Services
                 employee.ContactNumber = EmployeePostModel.ContactNumber;
                 employee.EmailId = EmployeePostModel.EmailId;
                 employee.Salary = EmployeePostModel.Salary;
+                employee.Email = EmployeePostModel.Email;
+                employee.Password= EmployeePostModel.Password;
                 employeeManagementContext.Add(employee);
                 await employeeManagementContext.SaveChangesAsync();
             }
@@ -63,6 +69,75 @@ namespace RepositoryLayer.Services
 
                 throw;
             };
+        }
+
+        public async Task<List<Employee>> GetAllEmployee()
+        {
+            try
+            {
+                List<Employee> result = new List<Employee>();
+
+                result = await employeeManagementContext.Employees.Where(u => u.EmployeeId == u.EmployeeId).ToListAsync();
+                return result;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<Employee> GetEmployee(int EmployeeId)
+        {
+            try
+            {
+                return await employeeManagementContext.Employees.FirstOrDefaultAsync(u => u.EmployeeId == EmployeeId);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public string LoginEmployee(string Email, string Password)
+        {
+            try
+            {
+                var user = employeeManagementContext.Employees.FirstOrDefault(u => u.Email == Email && u.Password == Password);
+                if (user != null)
+                {
+                    return GenerateSecurityToken(Email, user.EmployeeId);
+                }
+                return null;
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public string GenerateSecurityToken(string emailID, int userId)
+        {
+            var SecurityKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("THIS_IS_MY_KEY_TO_GENERATE_TOKEN"));
+            var credentials = new SigningCredentials(SecurityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Role,"User"),
+                new Claim(ClaimTypes.Email, emailID),
+                new Claim("UserId", userId.ToString())
+            };
+            var token = new JwtSecurityToken(
+                this.configuration["Jwt:Issuer"],
+                this.configuration["Jwt:Audience"],
+                claims,
+                expires: DateTime.Now.AddHours(24),
+                signingCredentials: credentials
+                );
+            return  new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         public async Task UpdateEmployee( int EmployeeId , UpdateModel updateModel)

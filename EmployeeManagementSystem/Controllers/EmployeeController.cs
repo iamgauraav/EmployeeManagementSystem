@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using RepositoryLayer.Entities;
 using RepositoryLayer.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -79,6 +80,67 @@ namespace EmployeeManagementSystem.Controllers
             }
            
         }
+        [Authorize(Roles = Role.User)]
+        [HttpGet("GetEmployee")]
+        public async Task<ActionResult> GetEmployee()
+        {
+           
+            try
+            {
+                var userid = User.Claims.FirstOrDefault(x => x.Type.ToString().Equals("userId", StringComparison.InvariantCultureIgnoreCase));
+                int UserId = Int32.Parse(userid.Value);
+                Employee employee = await this.employeeBL.GetEmployee(UserId);
+                return this.Ok(new { success = true, message = "Required note is:", data = employee });
+            }
+            catch (Exception ex)
+            {
+                return this.BadRequest(new { Success = false, message = ex.Message });
+            }
+        }
+        [Authorize(Roles = Role.Admin)]
+        [HttpGet("GetAllEmployee")]
+        public async Task<ActionResult> GetAllEmployees()
+        {
+            try
+            {
+                var userid = User.Claims.FirstOrDefault(x => x.Type.ToString().Equals("AdminId", StringComparison.InvariantCultureIgnoreCase));
+                int UserId = Int32.Parse(userid.Value);
+                List<Employee> employee = await this.employeeBL.GetAllEmployee();
+                return this.Ok(new { success = true, message="Required note is:", data = employee });
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+       
+        [HttpPost("LoginEmployee")]
+        public ActionResult LoginEmployee(string Email, string Password)
+        {
+            try
+            {
+                var user = employeeManagementContext.Employees.FirstOrDefault(u => u.Email == Email);
+
+                if (user == null)
+                {
+                    return this.BadRequest(new { success = false, message = "Email does not Exists " });
+                }
+                var user1 = employeeManagementContext.Employees.FirstOrDefault(u => u.Email == Email && u.Password == Password);
+                if (user1 == null)
+                {
+                    return this.BadRequest(new { success = false, message = "Password is Invalid " });
+                }
+                string token = this.employeeBL.LoginEmployee(Email, Password);
+                return this.Ok(new { success = true, message = "Login Sucessfull", token = token });
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
 
     }
 }

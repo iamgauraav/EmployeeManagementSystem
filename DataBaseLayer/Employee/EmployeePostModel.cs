@@ -17,6 +17,9 @@ namespace DataBaseLayer.Employee
         public string ContactNumber { get; set; }
         public string EmailId { get; set; }
         public int Salary { get; set; }
+        public string Email { get; set; }
+       
+        public string Password { get; set; }
 
 
 
